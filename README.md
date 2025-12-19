@@ -1,66 +1,60 @@
 # WingTradeBot
 
-Automated trading bot for SimpleFX integration with TradingView webhooks.
-
-## Overview
-
-This project implements a trading bot system with multiple dashboard implementations for exploratory work in software engineering frameworks. The system consists of:
-
-- **FastAPI Service**: Backend API service for SimpleFX broker integration
-- **Flask Dashboard**: Web dashboard implementation using Flask
-- **Django Dashboard**: Web dashboard implementation using Django
-
-Both Flask and Django implementations provide the same functionality, serving as exploratory work to understand and compare different Python web frameworks.
+Automated trading bot system integrating SimpleFX broker API with TradingView webhooks. Multi-framework implementation featuring FastAPI, Flask, and Django.
 
 ## Architecture
 
-- `shared/`: Core functionality shared across all services
-  - `simplefx_client.py`: SimpleFX API client
-  - `config.py`: Configuration management
-  - `database.py`: Database operations
-  - `webhook_processor.py`: Webhook processing logic
+**Backend Services:**
+- FastAPI REST API service for broker integration and webhook processing
+- Shared Python modules for API client, database operations, and webhook handling
 
-- `apps/fastapi_service/`: FastAPI backend service
-- `apps/flask_app/`: Flask dashboard implementation
-- `apps/django_app/`: Django dashboard implementation
+**Frontend Dashboards:**
+- Flask web application with Socket.IO real-time updates
+- Django web application with Channels WebSocket support
 
-## Setup
+Both dashboard implementations provide identical functionality for account monitoring, order management, and real-time trading data visualization.
 
-1. **Install dependencies**:
+## Tech Stack
+
+- **Backend:** FastAPI, Flask, Django
+- **Database:** SQLite with SQLAlchemy ORM
+- **Real-time:** Flask-SocketIO, Django Channels
+- **API Integration:** SimpleFX REST API, WebSocket connections
+- **Frontend:** React, HTML5, CSS3
+
+## Quick Start
+
+1. Install dependencies:
    ```bash
    scripts\setup\INSTALL_DEPENDENCIES.bat
    ```
 
-2. **Configure environment variables**:
+2. Configure environment:
    - Copy `.env.example` to `.env`
-   - Fill in your SimpleFX API keys and other configuration
+   - Set SimpleFX API credentials and configuration
 
-3. **Start services**:
-   - FastAPI: `cd apps\fastapi_service && python run.py`
+3. Start services:
+   - FastAPI: `scripts\setup\START_FASTAPI.bat`
    - Flask: `scripts\setup\START_FLASK.bat`
    - Django: `scripts\setup\START_DJANGO.bat`
 
-## Configuration
-
-All sensitive data (API keys, secrets, passwords) should be configured via environment variables in `.env` file. See `.env.example` for required variables.
-
 ## Services
 
-- **FastAPI**: http://localhost:8000 (API) | http://localhost:8000/docs (Swagger)
-- **Flask Dashboard**: http://localhost:5000
-- **Django Dashboard**: http://localhost:8001
+- FastAPI API: `http://localhost:8000` | Swagger: `http://localhost:8000/docs`
+- Flask Dashboard: `http://localhost:5000`
+- Django Dashboard: `http://localhost:8001`
 
-## Framework Comparison
+## Project Structure
 
-This project includes both Flask and Django implementations as exploratory work to:
-- Compare framework approaches and patterns
-- Understand differences in routing, templating, and middleware
-- Evaluate performance and development experience
-- Learn best practices for each framework
+```
+shared/              # Core modules (API client, database, webhooks)
+apps/
+  fastapi_service/   # REST API backend
+  flask_app/         # Flask dashboard
+  django_app/        # Django dashboard
+scripts/setup/       # Setup and startup scripts
+```
 
-Both implementations provide identical functionality, allowing for direct comparison of the frameworks in a real-world application context.
+## Configuration
 
-## License
-
-See LICENSE file for details.
-
+All sensitive credentials are managed via environment variables. See `.env.example` for required configuration.
