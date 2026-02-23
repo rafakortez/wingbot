@@ -1,0 +1,17 @@
+[Unit]
+Description=WingTradeBot Trading Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory={{ app_dir }}
+ExecStart=/usr/bin/node {{ app_dir }}/dist/server.js
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

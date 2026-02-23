@@ -1,0 +1,9 @@
+# Terraform state — contém IPs, IDs e dados sensíveis
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/
+
+# Valores reais das variáveis — nunca commitar
+terraform.tfvars
+
+# .terraform.lock.hcl deve ser commitado (trava versão dos providers)

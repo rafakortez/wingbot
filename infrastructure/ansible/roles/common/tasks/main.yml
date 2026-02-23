@@ -1,0 +1,116 @@
+---
+# Role: common — configuração base do servidor
+
+# ─── Swap ──────────────────────────────────────────────────────────────────
+- name: Verificar se swapfile existe
+  stat:
+    path: /swapfile
+  register: swapfile
+
+- name: Criar swapfile de {{ swap_size_mb }}MB
+  command: fallocate -l {{ swap_size_mb }}M /swapfile
+  when: not swapfile.stat.exists
+
+- name: Permissões corretas no swapfile
+  file:
+    path: /swapfile
+    mode: "0600"
+  when: not swapfile.stat.exists
+
+- name: Formatar swapfile
+  command: mkswap /swapfile
+  when: not swapfile.stat.exists
+
+- name: Ativar swapfile
+  command: swapon /swapfile
+  when: not swapfile.stat.exists
+
+- name: Garantir swap no fstab (persistente)
+  lineinfile:
+    path: /etc/fstab
+    line: "/swapfile none swap sw 0 0"
+    state: present
+
+# ─── Journald ──────────────────────────────────────────────────────────────
+- name: Criar pasta journald.conf.d
+  file:
+    path: /etc/systemd/journald.conf.d
+    state: directory
+    mode: "0755"
+
+- name: Limitar uso do journald
+  copy:
+    dest: /etc/systemd/journald.conf.d/limits.conf
+    content: |
+      [Journal]
+      SystemMaxUse=50M
+      RuntimeMaxUse=20M
+      MaxRetentionSec=7day
+      Compress=yes
+  notify: Restart journald
+
+# ─── SSH hardening ─────────────────────────────────────────────────────────
+- name: Mudar porta SSH para {{ ssh_port }}
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?Port "
+    line: "Port {{ ssh_port }}"
+  notify: Restart sshd
+
+- name: Garantir PasswordAuthentication desabilitado
+  lineinfile:
+    path: /etc/ssh/sshd_config.d/60-cloudimg-settings.conf
+    regexp: "^PasswordAuthentication"
+    line: "PasswordAuthentication no"
+    create: yes
+  notify: Restart sshd
+
+# ─── fail2ban ──────────────────────────────────────────────────────────────
+- name: Instalar fail2ban
+  apt:
+    name: fail2ban
+    state: present
+    update_cache: yes
+
+- name: Configurar fail2ban para SSH na porta customizada
+  copy:
+    dest: /etc/fail2ban/jail.d/sshd.conf
+    content: |
+      [sshd]
+      enabled = true
+      port    = {{ ssh_port }}
+      maxretry = 5
+      bantime  = 3600
+  notify: Restart fail2ban
+
+# ─── Serviços inúteis ──────────────────────────────────────────────────────
+- name: Desabilitar ModemManager
+  systemd:
+    name: ModemManager
+    state: stopped
+    enabled: false
+  ignore_errors: true
+
+- name: Desabilitar udisks2
+  systemd:
+    name: udisks2
+    state: stopped
+    enabled: false
+  ignore_errors: true
+
+# ─── Handlers ──────────────────────────────────────────────────────────────
+handlers:
+  - name: Restart journald
+    systemd:
+      name: systemd-journald
+      state: restarted
+
+  - name: Restart sshd
+    systemd:
+      name: ssh
+      state: restarted
+
+  - name: Restart fail2ban
+    systemd:
+      name: fail2ban
+      state: restarted

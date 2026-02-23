@@ -1,0 +1,109 @@
+---
+# Role: wingtradebot — deploy da aplicação
+
+# ─── Diretório e código ────────────────────────────────────────────────────
+- name: Clonar/atualizar repositório
+  git:
+    repo: "{{ git_repo }}"
+    dest: "{{ app_dir }}"
+    version: "{{ git_branch }}"
+    force: yes
+
+- name: Instalar dependências npm
+  npm:
+    path: "{{ app_dir }}"
+    state: present
+    production: yes
+
+- name: Fazer build TypeScript
+  command: npm run build
+  args:
+    chdir: "{{ app_dir }}"
+  environment:
+    NODE_OPTIONS: "--max-old-space-size=512"
+
+# ─── Configuração .env ─────────────────────────────────────────────────────
+- name: Criar arquivo .env a partir do template
+  template:
+    src: env.j2
+    dest: "{{ app_dir }}/.env"
+    mode: "0600"  # apenas root lê
+  notify: Restart wingtradebot
+
+# ─── SSL ───────────────────────────────────────────────────────────────────
+- name: Verificar se certbot está instalado
+  command: certbot --version
+  register: certbot_check
+  ignore_errors: true
+  changed_when: false
+
+- name: Instalar certbot (snap)
+  community.general.snap:
+    name: certbot
+    classic: yes
+    state: present
+  when: certbot_check.failed
+
+- name: Emitir certificado Let's Encrypt via DuckDNS
+  command: >
+    certbot certonly --standalone
+    --non-interactive --agree-tos
+    --email admin@{{ duckdns_domain }}
+    -d {{ duckdns_domain }}
+  args:
+    creates: /etc/letsencrypt/live/{{ duckdns_domain }}/fullchain.pem
+  when: certbot_check.failed
+
+- name: Criar pasta ssl da app
+  file:
+    path: "{{ app_dir }}/ssl"
+    state: directory
+    mode: "0700"
+
+- name: Linkar cert para pasta da app
+  file:
+    src: "/etc/letsencrypt/live/{{ duckdns_domain }}/fullchain.pem"
+    dest: "{{ app_dir }}/ssl/cert.pem"
+    state: link
+    force: yes
+
+- name: Linkar key para pasta da app
+  file:
+    src: "/etc/letsencrypt/live/{{ duckdns_domain }}/privkey.pem"
+    dest: "{{ app_dir }}/ssl/key.pem"
+    state: link
+    force: yes
+
+- name: Cron para renovar certificado automaticamente
+  cron:
+    name: "Renovar Let's Encrypt"
+    job: "certbot renew --quiet && systemctl restart wingtradebot"
+    special_time: weekly
+
+# ─── Systemd service ───────────────────────────────────────────────────────
+- name: Instalar arquivo de serviço systemd
+  template:
+    src: wingtradebot.service.j2
+    dest: /etc/systemd/system/wingtradebot.service
+    mode: "0644"
+  notify:
+    - Reload systemd
+    - Restart wingtradebot
+
+- name: Habilitar e iniciar serviço
+  systemd:
+    name: wingtradebot
+    enabled: true
+    state: started
+    daemon_reload: true
+
+# ─── Handlers ──────────────────────────────────────────────────────────────
+handlers:
+  - name: Reload systemd
+    systemd:
+      daemon_reload: true
+
+  - name: Restart wingtradebot
+    systemd:
+      name: wingtradebot
+      state: restarted

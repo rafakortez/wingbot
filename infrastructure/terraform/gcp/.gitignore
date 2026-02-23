@@ -1,0 +1,6 @@
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/
+terraform.tfvars
+
+# .terraform.lock.hcl deve ser commitado (trava versão dos providers)

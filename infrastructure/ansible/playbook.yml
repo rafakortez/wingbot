@@ -1,0 +1,23 @@
+---
+# WingTradeBot — Playbook principal
+#
+# Uso:
+#   ansible-playbook -i inventory.ini playbook.yml           # tudo
+#   ansible-playbook -i inventory.ini playbook.yml --tags common   # só hardening
+#   ansible-playbook -i inventory.ini playbook.yml --tags nodejs   # só Node.js
+#   ansible-playbook -i inventory.ini playbook.yml --tags app      # só a app
+#   ansible-playbook -i inventory.ini playbook.yml --check         # dry run
+
+- name: WingTradeBot Server Setup
+  hosts: trading
+  become: true
+  vars_files:
+    - vars/main.yml
+
+  roles:
+    - role: common
+      tags: common
+    - role: nodejs
+      tags: nodejs
+    - role: wingtradebot
+      tags: app

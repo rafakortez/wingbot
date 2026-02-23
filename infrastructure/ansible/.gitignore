@@ -1,0 +1,5 @@
+# Contém IP real e porta SSH
+inventory.ini
+
+# Contém secrets (API keys, senhas)
+vars/main.yml

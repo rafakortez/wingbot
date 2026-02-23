@@ -109,3 +109,9 @@ coverage/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# GCP credentials — NUNCA commitar
+*.json
+!package.json
+!package-lock.json
+!jest.config.js
