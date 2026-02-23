@@ -1,97 +1,103 @@
 export const config = {
-    PORT: parseInt(process.env.PORT || '443'),
-    DEBUG_LEVEL: process.env.DEBUG_LEVEL || 'normal', // Options: 'normal', 'verbose' 
-    SERVER_IP: process.env.SERVER_IP || 'your_server_ip',
-    ALLOWED_IPS: [
-        // Add your allowed IP addresses here
-        '127.0.0.1',
-        '::ffff:127.0.0.1',
-        '::1'
-    ],
+  PORT: 443,
+  DEBUG_LEVEL: 'normal', // Options: 'normal', 'verbose' 
+  SERVER_IP: '138.197.231.228',
+  ALLOWED_IPS: [
+    '52.89.214.238',
+    '34.212.75.30',
+    '54.218.53.128',
+    '52.32.178.7',
+    '138.197.231.228',
+    '192.81.216.8',
+    '179.0.56.238',
+    '143.110.222.166',
+    '177.107.124.117',
+    '::ffff:95.214.53.205',
+    '127.0.0.1',
+    '::ffff:127.0.0.1',
+    '::1'
+  ],
 
-    SIMPLEFX_API_KEY: process.env.SIMPLEFX_API_KEY || '',
-    SIMPLEFX_API_SECRET: process.env.SIMPLEFX_API_SECRET || '',
+  SIMPLEFX_API_KEY: 'YOUR_API_KEY',
+  SIMPLEFX_API_SECRET: 'YOUR_API_SECRET',
 
-    SIMPLEFX_API_KEY2: process.env.SIMPLEFX_API_KEY2 || '',
-    SIMPLEFX_API_SECRET2: process.env.SIMPLEFX_API_SECRET2 || '',
+  SIMPLEFX_API_KEY2: 'YOUR_API_KEY2',
+  SIMPLEFX_API_SECRET2: 'YOUR_API_SECRET2',
 
-    SIMPLEFX_API_URL: 'https://rest.simplefx.com/api/v3',
-    SIMPLEFX_QUOTES_URL: 'https://web-quotes-core.simplefx.com',
+  SIMPLEFX_API_URL: 'https://rest.simplefx.com/api/v3',
+  SIMPLEFX_QUOTES_URL: 'https://web-quotes-core.simplefx.com',
 
-    // Circuit breaker parameters
-    CIRCUIT_BREAKER: {
-        FAILURE_THRESHOLD: 5,
-        RESET_TIMEOUT: 60000, // 1 minute in milliseconds
-        HALF_OPEN_TIMEOUT: 30000 // 30 seconds in milliseconds
+  // Circuit breaker parameters
+  CIRCUIT_BREAKER: {
+    FAILURE_THRESHOLD: 5,
+    RESET_TIMEOUT: 60000, // 1 minute in milliseconds
+    HALF_OPEN_TIMEOUT: 30000 // 30 seconds in milliseconds
+  },
+
+  // Rate limiting parameters
+  RATE_LIMIT: {
+    MAX_REQUESTS: 10,
+    TIME_WINDOW: 60000 // 1 minute in milliseconds
+  },
+
+  BYBIT_API_KEY: 'YOUR_BYBIT_KEY',
+  BYBIT_API_SECRET: 'YOUR_BYBIT_SECRET',
+  BYBIT_TESTNET: true,
+
+  BYBIT: {
+    API_KEY: 'YOUR_BYBIT_KEY',
+    API_SECRET: 'YOUR_BYBIT_SECRET',
+    TESTNET: true,
+  },
+
+  STATUS_AUTH: {
+    USERNAME: 'admin',
+    PASSWORD: 'YOUR_PASSWORD'
+  },
+
+  STATUS_AUTH2: {
+    USERNAME: 'admin',
+    PASSWORD: 'YOUR_PASSWORD'
+  },
+
+  // Cron job configuration
+  CRON: {
+    // Order sync interval in minutes (set to 0 to disable)
+    ORDER_SYNC_INTERVAL: parseInt(process.env.ORDER_SYNC_INTERVAL || '30'),
+    // Enable/disable order sync cron
+    ENABLE_ORDER_SYNC: process.env.ENABLE_ORDER_SYNC !== 'false'
+  },
+
+  // Spread limits configuration
+  SPREAD_LIMITS: {
+    forex: {
+      normal: 15,      // pips during normal market conditions
+      news: 25,        // pips during news events (higher volatility)
+      overnight: 20,   // pips during low liquidity hours
+      lowVolatility: 8 // pips during very low volatility (tighter spreads required)
     },
-
-    // Rate limiting parameters
-    RATE_LIMIT: {
-        MAX_REQUESTS: 10,
-        TIME_WINDOW: 60000 // 1 minute in milliseconds
-    },
-
-    BYBIT_API_KEY: process.env.BYBIT_API_KEY || '',
-    BYBIT_API_SECRET: process.env.BYBIT_API_SECRET || '',
-    BYBIT_TESTNET: process.env.BYBIT_TESTNET === 'true',
-
-    BYBIT: {
-        API_KEY: process.env.BYBIT_API_KEY || '',
-        API_SECRET: process.env.BYBIT_API_SECRET || '',
-        TESTNET: process.env.BYBIT_TESTNET === 'true',
-    },
-
-    STATUS_AUTH: {
-        USERNAME: process.env.STATUS_AUTH_USERNAME || 'admin',
-        PASSWORD: process.env.STATUS_AUTH_PASSWORD || ''
-    },
-
-    STATUS_AUTH2: {
-        USERNAME: process.env.STATUS_AUTH2_USERNAME || 'admin',
-        PASSWORD: process.env.STATUS_AUTH2_PASSWORD || ''
-    },
-
-    // Cron job configuration
-    CRON: {
-        // Order sync interval in minutes (set to 0 to disable)
-        ORDER_SYNC_INTERVAL: parseInt(process.env.ORDER_SYNC_INTERVAL || '30'),
-        // Enable/disable order sync cron
-        ENABLE_ORDER_SYNC: process.env.ENABLE_ORDER_SYNC !== 'false'
+    indices: {
+      normal: 300,     // points during normal market conditions
+      news: 500,       // points during news events
+      overnight: 400,  // points during low liquidity hours
+      lowVolatility: 150 // points during very low volatility
     }
+  },
+
+  // Spread validation settings
+  SPREAD_VALIDATION: {
+    maxRetries: 5,           // Maximum retry attempts when spread is too high
+    retryDelayMs: 2000,      // Delay between retries in milliseconds
+    backoffMultiplier: 1.5   // Exponential backoff multiplier
+  }
 };
 
-export const DEFAULT_ACCOUNT_NUMBER2 = process.env.DEFAULT_ACCOUNT_NUMBER2 || '';
-export const DEFAULT_ACCOUNT_NUMBER = process.env.DEFAULT_ACCOUNT_NUMBER || '';
+// export const DEFAULT_ACCOUNT_NUMBER2 = '3979937';
+export const DEFAULT_ACCOUNT_NUMBER = '3028761';
 
 // Account configuration
-export const SECONDARY_API_ACCOUNTS = [DEFAULT_ACCOUNT_NUMBER2]; // Accounts that use the secondary API
-export const ALL_MONITORED_ACCOUNTS = [DEFAULT_ACCOUNT_NUMBER, DEFAULT_ACCOUNT_NUMBER2]; // All accounts to monitor
+// export const SECONDARY_API_ACCOUNTS = [DEFAULT_ACCOUNT_NUMBER2]; // Accounts that use the secondary API - DISABLED
+export const SECONDARY_API_ACCOUNTS: string[] = []; // No secondary API accounts - all use primary
+export const ALL_MONITORED_ACCOUNTS = [DEFAULT_ACCOUNT_NUMBER, '3028450']; // All accounts to monitor
 
-// Environment variable validation
-export function validateEnvironmentVariables(): void {
-    const requiredVars = [
-        'SIMPLEFX_API_KEY',
-        'SIMPLEFX_API_SECRET',
-        'SIMPLEFX_API_KEY2',
-        'SIMPLEFX_API_SECRET2',
-        'STATUS_AUTH_PASSWORD',
-        'STATUS_AUTH2_PASSWORD',
-        'DEFAULT_ACCOUNT_NUMBER',
-        'DEFAULT_ACCOUNT_NUMBER2'
-    ];
-
-    const missingVars = requiredVars.filter(varName => !process.env[varName]);
-
-    if (missingVars.length > 0) {
-        console.error('❌ Missing required environment variables:');
-        missingVars.forEach(varName => {
-            console.error(`   - ${varName}`);
-        });
-        console.error('\n💡 Please check your .env file or environment configuration.');
-        console.error('📋 See .env.example for required variables and their format.');
-        console.error('📋 Copy src/config.example.ts to src/config.ts and configure with your values.');
-        process.exit(1);
-    }
-
-    console.log('✅ All required environment variables are configured.');
-}
+// Environment variable validation - REMOVED since using hardcoded values
