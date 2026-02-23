@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "dev": "NODE_OPTIONS='--max-old-space-size=64' ts-node src/server.ts",
-    "build": "NODE_OPTIONS='--max-old-space-size=512' npx tsc --project tsconfig.prod.json",
+    "build": "cross-env NODE_OPTIONS='--max-old-space-size=512' tsc --project tsconfig.prod.json",
     "start": "node scripts/start-windows.js",
     "start:direct": "node dist/server.js",
     "prestart": "npm run build"
@@ -22,13 +22,15 @@
     "ws": "^8.13.0"
   },
   "devDependencies": {
+    "@jest/globals": "^30.2.0",
     "@types/express": "^4.17.17",
     "@types/jest": "^30.0.0",
-    "@types/node": "^20.4.5",
+    "@types/node": "^20.19.33",
     "@types/ws": "^8.5.5",
+    "cross-env": "^10.1.0",
     "jest": "^30.2.0",
     "ts-jest": "^29.4.6",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }
