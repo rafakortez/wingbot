@@ -13,7 +13,7 @@ pr:
     - master
 
 pool:
-  vmImage: 'default'
+  vmImage: 'Default'
 
 steps:
 - checkout: self
